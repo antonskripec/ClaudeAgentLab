@@ -84,3 +84,6 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Tool audit log
+audit.log

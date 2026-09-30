@@ -1,7 +1,7 @@
+from tools.my_tools import audit_tool, log_tool
 from claude_agent_sdk import AgentDefinition
 from typing import Any
 from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
-from hooks.my_hooks import log_tool
 import anyio
 import dataclasses
 import json
@@ -39,7 +39,8 @@ options : ClaudeAgentOptions  = ClaudeAgentOptions(
     model="claude-opus-5-5",
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
-    hooks={"PreToolUse": [HookMatcher(hooks=[log_tool])]},
+    hooks={"PreToolUse": [HookMatcher(hooks=[log_tool])],
+           "PostToolUse": [HookMatcher(hooks=[audit_tool])] },
     agents= {"reviewer": reviewer},
     allowed_tools=["Read", "Grep", "Glob", "Task"]
 )
