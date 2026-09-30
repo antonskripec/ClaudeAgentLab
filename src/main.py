@@ -1,8 +1,37 @@
+from typing import Any
+from claude_agent_sdk import ClaudeAgentOptions
+import anyio
+import dataclasses
+import json
 from dotenv import load_dotenv
 import os
+from claude_agent_sdk import query
 
+# Load environment variables from a .env file
 load_dotenv()
 
-api_key = os.getenv("ANTHROPIC_API_KEY")
+# Retrieve the API key from environment variables and configure the Claude agent options
+api_key: str | None = os.getenv("ANTHROPIC_API_KEY")
+if api_key is None:
+    raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
-print(api_key)
+# Configure the Claude agent options with the retrieved API key
+options : ClaudeAgentOptions  = ClaudeAgentOptions(
+    system_prompt="""
+        You are an expert Python developer.
+        Explain everything clearly and concisely.
+        """,
+    model="claude-opus-5-5",
+    effort="medium",
+    env={"ANTHROPIC_API_KEY": api_key},
+)
+
+# Run the main async function
+async def main() -> None:
+    async for response in query(prompt="Explain async/await in Python", options=options):
+        # Messages are dataclasses; convert to a dict and pretty-print as indented JSON
+        data: dict[str, str | Any] = {"type": type(response).__name__, **dataclasses.asdict(response)}
+        print(json.dumps(data, indent=2, ensure_ascii=False, default=str))
+
+# Execute the main async function using anyio
+anyio.run(main)
