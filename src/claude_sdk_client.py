@@ -1,4 +1,6 @@
 import asyncio
+import dataclasses
+import json
 import os
 
 from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
@@ -26,12 +28,29 @@ options = ClaudeAgentOptions(
 )
 
 
+# Format an SDK message (a dataclass) as indented JSON, tagged with its type name
+def format_message(message) -> str:
+    data = dataclasses.asdict(message) if dataclasses.is_dataclass(message) else message
+    return json.dumps(
+        {"type": type(message).__name__, "data": data},
+        indent=2,
+        ensure_ascii=False,
+        default=str,
+    )
+
+
 # Main async function to run the Claude SDK client and query the auth module
 async def main():
     async with ClaudeSDKClient(options=options) as client:
+        # Question 1 : Send a query to the Claude SDK client to summarize the auth module
         await client.query(prompt="Summarize the auth module")
         async for message in client.receive_response():
-            print(message)
+            print(format_message(message))
+
+        # Question 2 : Send a query to the Claude SDK client to identify functions lacking tests
+        await client.query(prompt="Which of those functions lacks tests?")
+        async for message in client.receive_response():
+            print(format_message(message))
 
 
 # Entry point for the script
