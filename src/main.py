@@ -1,11 +1,13 @@
 from typing import Any
-from claude_agent_sdk import ClaudeAgentOptions
+from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
+from hooks.my_hooks import log_tool
 import anyio
 import dataclasses
 import json
 from dotenv import load_dotenv
 import os
 from claude_agent_sdk import query
+
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -24,7 +26,10 @@ options : ClaudeAgentOptions  = ClaudeAgentOptions(
     model="claude-opus-5-5",
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
+    hooks={"PreToolUse": [HookMatcher(hooks=[log_tool])]},
 )
+
+
 
 # Run the main async function
 async def main() -> None:
