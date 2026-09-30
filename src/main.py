@@ -1,3 +1,4 @@
+from claude_agent_sdk import AgentDefinition
 from typing import Any
 from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
 from hooks.my_hooks import log_tool
@@ -17,6 +18,18 @@ api_key: str | None = os.getenv("ANTHROPIC_API_KEY")
 if api_key is None:
     raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
+# Define the security reviewer sub agent
+reviewer = AgentDefinition(description="""
+                                        Reviews code for security flaws.
+                                        Use after any change to auth code.
+                                        """,
+                           prompt="""
+                                    You are a security reviewer.
+                                    Report each finding with its file, line and fix.
+                                  """,
+                           tools=["Read", "Grep", "Glob"])
+
+
 # Configure the Claude agent options with the retrieved API key
 options : ClaudeAgentOptions  = ClaudeAgentOptions(
     system_prompt="""
@@ -27,6 +40,8 @@ options : ClaudeAgentOptions  = ClaudeAgentOptions(
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
     hooks={"PreToolUse": [HookMatcher(hooks=[log_tool])]},
+    agents= {"reviewer": reviewer},
+    allowed_tools=["Read", "Grep", "Glob", "Task"]
 )
 
 
