@@ -2,6 +2,9 @@ import asyncio
 import dataclasses
 import json
 import os
+import sys
+from pathlib import Path
+from typing import Any
 
 from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
 from dotenv import load_dotenv
@@ -25,12 +28,21 @@ options = ClaudeAgentOptions(
     allowed_tools=["Read", "Grep", "Glob"],
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
+    mcp_servers={
+        "DocumentMCP": {
+            "type": "stdio",
+            "command": sys.executable,
+            "args": [str(Path(__file__).parent / "tools" / "my_mcps.py")],
+        }
+    },
 )
 
 
 # Format an SDK message (a dataclass) as indented JSON, tagged with its type name
 def format_message(message) -> str:
-    data = dataclasses.asdict(message) if dataclasses.is_dataclass(message) else message
+    data: dict[str, Any] | Any = (
+        dataclasses.asdict(message) if dataclasses.is_dataclass(message) else message
+    )
     return json.dumps(
         {"type": type(message).__name__, "data": data},
         indent=2,
