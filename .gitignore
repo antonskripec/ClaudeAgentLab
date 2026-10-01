@@ -72,7 +72,6 @@ dmypy.json
 *~
 
 # IDEs / editors
-.vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
