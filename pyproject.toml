@@ -4,6 +4,8 @@ version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
     "claude-agent-sdk>=0.2.162",
+    "fastapi>=0.142.2",
+    "pydantic>=2.13.5",
     "python-dotenv>=1.2.3",
 ]
 

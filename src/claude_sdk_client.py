@@ -32,7 +32,7 @@ options = ClaudeAgentOptions(
         "DocumentMCP": {
             "type": "stdio",
             "command": sys.executable,
-            "args": [str(Path(__file__).parent / "tools" / "my_mcps.py")],
+            "args": [str(Path(__file__).parent / "mcp_servers" / "my_mcps.py")],
         }
     },
 )
