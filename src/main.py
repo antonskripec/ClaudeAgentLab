@@ -7,7 +7,7 @@ import anyio
 from claude_agent_sdk import AgentDefinition, ClaudeAgentOptions, HookMatcher, query
 from dotenv import load_dotenv
 
-from tools.my_tools import audit_tool, log_tool
+from hooks.my_hooks import audit_tool, log_tool
 
 # Load environment variables from a .env file
 load_dotenv()
