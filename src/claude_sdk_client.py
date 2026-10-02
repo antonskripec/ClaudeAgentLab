@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from claude_agent_sdk import (
+    AgentDefinition,
     ClaudeAgentOptions,
     ClaudeSDKClient,
     HookMatcher,
@@ -37,6 +38,20 @@ log_server = create_sdk_mcp_server(
 )
 
 
+# Define the security reviewer sub agent
+reviewer = AgentDefinition(
+    description="""
+                                        Reviews code for security flaws.
+                                        Use after any change to auth code.
+                                        """,
+    prompt="""
+                                    You are a security reviewer.
+                                    Report each finding with its file, line and fix.
+                                  """,
+    tools=[Tool.Read, Tool.Grep, Tool.Glob],
+)
+
+
 # Configure the Claude agent options
 options = ClaudeAgentOptions(
     model="claude-opus-5-5",
@@ -49,6 +64,7 @@ options = ClaudeAgentOptions(
     ],
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
+    agents={"reviewer": reviewer},
     mcp_servers={
         "log_server": log_server,
         "DocumentMCP": {
