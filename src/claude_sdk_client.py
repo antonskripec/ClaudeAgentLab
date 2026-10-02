@@ -16,7 +16,7 @@ from claude_agent_sdk import (
 from dotenv import load_dotenv
 
 from hooks.my_hooks import audit_hook, check_bash
-from tools.constants import Tool
+from tools.constants import ClaudeTool
 from tools.my_tools import log_message
 
 # Load environment variables from a .env file
@@ -48,7 +48,7 @@ reviewer = AgentDefinition(
                                     You are a security reviewer.
                                     Report each finding with its file, line and fix.
                                   """,
-    tools=[Tool.Read, Tool.Grep, Tool.Glob],
+    tools=[ClaudeTool.Read, ClaudeTool.Grep, ClaudeTool.Glob],
 )
 
 
@@ -56,10 +56,11 @@ reviewer = AgentDefinition(
 options = ClaudeAgentOptions(
     model="claude-opus-5-5",
     allowed_tools=[
-        Tool.Read,
-        Tool.Grep,
-        Tool.Glob,
-        Tool.Bash,
+        ClaudeTool.Read,
+        ClaudeTool.Grep,
+        ClaudeTool.Glob,
+        ClaudeTool.Bash,
+        ClaudeTool.Task,
         "mcp__log_server__log_message",
     ],
     effort="medium",

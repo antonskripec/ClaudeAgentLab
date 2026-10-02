@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class Tool(StrEnum):
+class ClaudeTool(StrEnum):
     Bash = "Bash"
     Read = "Read"
     Write = "Write"
