@@ -8,6 +8,7 @@ from claude_agent_sdk import AgentDefinition, ClaudeAgentOptions, HookMatcher, q
 from dotenv import load_dotenv
 
 from hooks.my_hooks import audit_hook, check_bash, log_hook
+from tools.constants import Tool
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -29,7 +30,7 @@ reviewer = AgentDefinition(
                                     You are a security reviewer.
                                     Report each finding with its file, line and fix.
                                   """,
-    tools=["Read", "Grep", "Glob"],
+    tools=[Tool.Read, Tool.Grep, Tool.Glob],
 )
 
 
@@ -50,7 +51,7 @@ options: ClaudeAgentOptions = ClaudeAgentOptions(
         "PostToolUse": [HookMatcher(hooks=[audit_hook])],
     },
     agents={"reviewer": reviewer},
-    allowed_tools=["Read", "Grep", "Glob", "Task"],
+    allowed_tools=[Tool.Read, Tool.Grep, Tool.Glob, Tool.Task],
 )
 
 

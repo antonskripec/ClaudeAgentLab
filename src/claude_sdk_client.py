@@ -14,7 +14,8 @@ from claude_agent_sdk import (
 )
 from dotenv import load_dotenv
 
-from hooks.my_hooks import check_bash
+from hooks.my_hooks import audit_hook, check_bash
+from tools.constants import Tool
 from tools.my_tools import log_message
 
 # Load environment variables from a .env file
@@ -39,7 +40,13 @@ log_server = create_sdk_mcp_server(
 # Configure the Claude agent options
 options = ClaudeAgentOptions(
     model="claude-opus-5-5",
-    allowed_tools=["Read", "Grep", "Glob", "mcp__log_server__log_message"],
+    allowed_tools=[
+        Tool.Read,
+        Tool.Grep,
+        Tool.Glob,
+        Tool.Bash,
+        "mcp__log_server__log_message",
+    ],
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
     mcp_servers={
@@ -52,6 +59,7 @@ options = ClaudeAgentOptions(
     },
     hooks={
         "PreToolUse": [HookMatcher(matcher="Bash", hooks=[check_bash])],
+        "PostToolUse": [HookMatcher(hooks=[audit_hook])],
     },
 )
 
