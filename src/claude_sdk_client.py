@@ -6,8 +6,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
+from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient, create_sdk_mcp_server
 from dotenv import load_dotenv
+
+from tools.my_tools import log_message
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -22,13 +24,20 @@ if api_key is None:
 # Set the API key as an environment variable for the current process
 os.environ["ANTHROPIC_API_KEY"] = api_key
 
+# Create an MCP server for logging messages using the log_message tool
+log_server = create_sdk_mcp_server(
+    name="log_server", version="1.0.0", tools=[log_message]
+)
+
+
 # Configure the Claude agent options
 options = ClaudeAgentOptions(
     model="claude-opus-5-5",
-    allowed_tools=["Read", "Grep", "Glob"],
+    allowed_tools=["Read", "Grep", "Glob", "mcp__log_server__log_message"],
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
     mcp_servers={
+        "log_server": log_server,
         "DocumentMCP": {
             "type": "stdio",
             "command": sys.executable,
