@@ -7,7 +7,7 @@ import anyio
 from claude_agent_sdk import AgentDefinition, ClaudeAgentOptions, HookMatcher, query
 from dotenv import load_dotenv
 
-from hooks.my_hooks import audit_tool, log_tool
+from hooks.my_hooks import audit_hook, check_bash, log_hook
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -43,8 +43,11 @@ options: ClaudeAgentOptions = ClaudeAgentOptions(
     effort="medium",
     env={"ANTHROPIC_API_KEY": api_key},
     hooks={
-        "PreToolUse": [HookMatcher(hooks=[log_tool])],
-        "PostToolUse": [HookMatcher(hooks=[audit_tool])],
+        "PreToolUse": [
+            HookMatcher(hooks=[log_hook]),
+            HookMatcher(matcher="Bash", hooks=[check_bash]),
+        ],
+        "PostToolUse": [HookMatcher(hooks=[audit_hook])],
     },
     agents={"reviewer": reviewer},
     allowed_tools=["Read", "Grep", "Glob", "Task"],

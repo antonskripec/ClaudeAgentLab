@@ -6,9 +6,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient, create_sdk_mcp_server
+from claude_agent_sdk import (
+    ClaudeAgentOptions,
+    ClaudeSDKClient,
+    HookMatcher,
+    create_sdk_mcp_server,
+)
 from dotenv import load_dotenv
 
+from hooks.my_hooks import check_bash
 from tools.my_tools import log_message
 
 # Load environment variables from a .env file
@@ -42,7 +48,10 @@ options = ClaudeAgentOptions(
             "type": "stdio",
             "command": sys.executable,
             "args": [str(Path(__file__).parent / "mcp_servers" / "my_mcps.py")],
-        }
+        },
+    },
+    hooks={
+        "PreToolUse": [HookMatcher(matcher="Bash", hooks=[check_bash])],
     },
 )
 
