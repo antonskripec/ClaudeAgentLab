@@ -15,8 +15,8 @@ from claude_agent_sdk import (
 )
 from dotenv import load_dotenv
 
-from hooks.my_hooks import audit_hook, check_bash
-from hooks.my_logging import log_tool_call, log_tool_result
+from hooks.my_hooks import check_bash
+from hooks.my_logging import log_tool_call, log_tool_failure, log_tool_result
 from tools.constants import ClaudeTool
 from tools.my_tools import log_message
 
@@ -88,6 +88,9 @@ options = ClaudeAgentOptions(
         ],
         "PostToolUse": [
             HookMatcher(hooks=[log_tool_result]),
+        ],
+        "PostToolUseFailure": [
+            HookMatcher(hooks=[log_tool_failure]),
         ],
     },
 )

@@ -36,3 +36,19 @@ async def log_tool_result(
     )
 
     return {}
+
+
+# Logs a failed tool call with its name, input, ID, and error.
+async def log_tool_failure(
+    input_data: HookInput, tool_use_id: str | None, context: HookContext
+) -> HookJSONOutput:
+    logger.error(
+        "TOOL FAILED name=%s input=%s id=%s error=%s interrupted=%s",
+        input_data.get("tool_name"),
+        input_data.get("tool_input"),
+        tool_use_id,
+        input_data.get("error"),
+        input_data.get("is_interrupt", False),
+    )
+
+    return {}
