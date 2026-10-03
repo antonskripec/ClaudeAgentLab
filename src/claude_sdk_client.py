@@ -16,6 +16,7 @@ from claude_agent_sdk import (
 from dotenv import load_dotenv
 
 from hooks.my_hooks import audit_hook, check_bash
+from hooks.my_logging import log_tool_call, log_tool_result
 from tools.constants import ClaudeTool
 from tools.my_tools import log_message
 
@@ -52,8 +53,14 @@ reviewer = AgentDefinition(
 )
 
 
+# Handle standard error output
+def handle_stderr(line: str) -> None:
+    print(f"[STDERR] {line}")
+
+
 # Configure the Claude agent options
 options = ClaudeAgentOptions(
+    stderr=handle_stderr,
     model="claude-opus-5-5",
     allowed_tools=[
         ClaudeTool.Read,
@@ -75,8 +82,13 @@ options = ClaudeAgentOptions(
         },
     },
     hooks={
-        "PreToolUse": [HookMatcher(matcher="Bash", hooks=[check_bash])],
-        "PostToolUse": [HookMatcher(hooks=[audit_hook])],
+        "PreToolUse": [
+            HookMatcher(matcher="Log", hooks=[log_tool_call]),
+            HookMatcher(matcher="Bash", hooks=[check_bash]),
+        ],
+        "PostToolUse": [
+            HookMatcher(hooks=[log_tool_result]),
+        ],
     },
 )
 
