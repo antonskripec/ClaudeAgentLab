@@ -51,6 +51,7 @@ print(formatted_docs)
 
 
 # Create a dictionary mapping URLs to their corresponding documents.
+# Alternative way to create the dictionary mapping URLs to documents.
 # BY_URL = {}
 # for doc in DOCS:
 #     url = doc["url"]
